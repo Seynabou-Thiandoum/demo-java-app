@@ -1,26 +1,12 @@
-// ============================================================
-//  JENKINSFILE — Pipeline CI/CD Java / Maven
-//  Version simplifiée pour démo (sans Docker agent)
-// ============================================================
-
 pipeline {
 
-    // ✅ "any" = Jenkins utilise son propre environnement
-    // Pas besoin du plugin Docker
     agent any
 
-    // -------------------------------------------------------
-    // VARIABLES D'ENVIRONNEMENT
-    //Test
-    // -------------------------------------------------------
     environment {
         APP_NAME    = 'demo-java-app'
         APP_VERSION = '1.0.0'
     }
 
-    // -------------------------------------------------------
-    // OPTIONS GLOBALES
-    // -------------------------------------------------------
     options {
         timestamps()
         timeout(time: 30, unit: 'MINUTES')
@@ -28,14 +14,8 @@ pipeline {
         disableConcurrentBuilds()
     }
 
-    // ============================================================
-    //  STAGES
-    // ============================================================
     stages {
 
-        // ---------------------------------------------------
-        // STAGE 1 : Récupération du code source
-        // ---------------------------------------------------
         stage('Checkout') {
             steps {
                 echo '📥 Récupération du code source depuis Git...'
@@ -43,13 +23,10 @@ pipeline {
             }
         }
 
-        // ---------------------------------------------------
-        // STAGE 2 : Compilation
-        // ---------------------------------------------------
         stage('Build') {
             steps {
                 echo '⚙️  Compilation du projet Maven...'
-                bat 'mvn clean compile -B'
+                sh 'mvn clean compile -B'
             }
             post {
                 failure {
@@ -58,13 +35,10 @@ pipeline {
             }
         }
 
-        // ---------------------------------------------------
-        // STAGE 3 : Tests unitaires
-        // ---------------------------------------------------
         stage('Tests Unitaires') {
             steps {
                 echo '🧪 Exécution des tests unitaires...'
-                bat 'mvn test -B'
+                sh 'mvn test -B'
             }
             post {
                 always {
@@ -77,23 +51,17 @@ pipeline {
             }
         }
 
-        // ---------------------------------------------------
-        // STAGE 4 : Packaging (création du JAR)
-        // ---------------------------------------------------
         stage('Package') {
             steps {
                 echo '📦 Création du JAR...'
-                bat 'mvn package -B -DskipTests'
+                sh 'mvn package -B -DskipTests'
                 archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
-                echo "✅ JAR archivé avec succès !"
+                echo '✅ JAR archivé avec succès !'
             }
         }
 
     }
 
-    // ============================================================
-    //  POST
-    // ============================================================
     post {
         success {
             echo '🎉 Pipeline terminé avec SUCCÈS !'
