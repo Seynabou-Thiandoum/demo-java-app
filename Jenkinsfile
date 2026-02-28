@@ -11,6 +11,7 @@ pipeline {
 
     // -------------------------------------------------------
     // VARIABLES D'ENVIRONNEMENT
+    //Test
     // -------------------------------------------------------
     environment {
         APP_NAME    = 'demo-java-app'
